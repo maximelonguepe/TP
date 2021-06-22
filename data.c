@@ -45,9 +45,8 @@ void envoyerRequete(int socketEchange, buffer_t input) {
 	if(input[0]== '/') { // CMD
 		if (strcmp(input,"/bye")==0) req.reqNum = 1;
 		else if (strcmp(input,"/list")==0) req.reqNum = 2;
-		else 	if (strcmp(input,"/talk")==0) req.reqNum = 3;
-
-		else 	if (strstr(input, "/log") != NULL) req.reqNum = LOG;
+		else if (strcmp(input,"/talk")==0) req.reqNum = 3;
+		else if (strstr(input, "/log") != NULL) req.reqNum = LOG;
 
 		// etc...
 	}
