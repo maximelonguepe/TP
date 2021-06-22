@@ -52,10 +52,6 @@ void dialSrv2Clt(int socketDial,chatter_tab *  chatters) {
                 printf("Joueur connecte : %s\n",chatters[chatters->nbChatters].chatters->nom);
                 chatters->nbChatters++;
                 printf("Nb joueurs : %d\n",chatters->nbChatters);
-
-
-
-
                 break;
 
         }
