@@ -73,7 +73,7 @@ void dialClt2srv(int socketAppel) {
         //scanf("%[^ ]\n", buff);
         //gets(buff);
         custom_read(buff, MAX_BUFF);
-        envoyerMessage(socketAppel, buff);
+        envoyerRequete(socketAppel, buff);
         recevoirMessage(socketAppel, buff, MAX_BUFF);
     } while (strcmp(buff, "BYE") != 0);
 }
