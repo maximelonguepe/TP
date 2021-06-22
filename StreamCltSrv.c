@@ -34,18 +34,20 @@ typedef struct chatter {
 } chatter_t;
 
 typedef struct chatter_tab {
-    chatter_t chatters[60];        /** numéro de requête -- toujours présent. Définit le type de requête (message ou type de commande) */
+    chatter_t chatters[70];
     int nbChatters;
 } chatter_tab;
 
 int sockEcoute;		// socket d'écoute de l'aaplication serveur
-chatter_tab chatterTab;
+chatter_tab * chatterTab;
 int nbChatters;
 void installSigServer(int sigNum);
 void client(char *adrIP, int port);
 void serveur (char *adrIP, int port);
 void dialSrv2Clt(int socketDial,chatter_tab * chatterTab);
 void dialClt2srv(int socketAppel);
+key_t genererCleChatters();
+chatter_tab *recupererTabChatters(key_t cle2);
 char * progName;
 
 int main (__attribute__((unused)) int c, char **v) {
@@ -66,6 +68,10 @@ int main (__attribute__((unused)) int c, char **v) {
 void creerProcService(int sockEcoute, int sockDial) { // TODO : A déplacer dans proto.c
 	int pid;
     //chatterTab.nbChatters=0;
+    key_t cleChatter;
+    cleChatter=genererCleChatters();
+    chatterTab=recupererTabChatters(cleChatter);
+    //chatterTab->nbChatters=0;
 	// Créer un processus de service pour l'affecter au service du client connecté
 	CHECK(pid=fork(), "-- PB fork() --");
 	if (pid == 0) {
@@ -74,7 +80,7 @@ void creerProcService(int sockEcoute, int sockDial) { // TODO : A déplacer dans
 		// aux requêtes de connexion
 		CHECK(close(sockEcoute),"-- PB close() --");
 		// Dialoguer avec le client
-		dialSrv2Clt(sockDial,&chatterTab);
+		dialSrv2Clt(sockDial,chatterTab);
 		// Fermer la socket de dialogue
 		CHECK(close(sockDial),"-- PB close() --");
 		// Fin du processus de service

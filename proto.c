@@ -2,10 +2,31 @@
 #include "proto.h"
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
 #include "read_lib/read_lib.h"
+#include <sys/ipc.h>
+#include <sys/shm.h>
 // Correspond à la couche 7 du modèle OSI (couche Application)
 #define OK            "OK"
 #define BYE            "BYE"
+
+key_t genererCle(char *chaine) {
+    key_t cle2 = ftok(chaine, 'R');
+    return cle2;
+}
+
+key_t genererCleChatters() {
+    return (genererCle("chatters.txt"));
+}
+
+
+chatter_tab *recupererTabChatters(key_t cle2) {
+    chatter_tab *chatterTab;
+    int media2 = shmget(cle2, sizeof(chatter_tab), 0777 | IPC_CREAT);
+    chatterTab = shmat(media2, (void *) 0, 0);
+    return chatterTab;
+}
 
 
 // Traitement en fonction du type de requête reçue + fonctions venant de StreamCltSrv
@@ -16,6 +37,9 @@ void dialSrv2Clt(int socketDial,chatter_tab *  chatters) {
     do {
         memset(buff, 0, MAX_BUFF);
         //recevoirMessage(socketDial, buff, MAX_BUFF) ;
+        key_t cle;
+        cle=genererCleChatters();
+        chatters=recupererTabChatters(cle);
         recevoirRequete(socketDial, &requete);
         // appeler une fct avec le param buff pour connaître le numero de requete reçue
         // on réalise un switch sur ce numéro : à charque numéro correspond une fonction
@@ -25,9 +49,9 @@ void dialSrv2Clt(int socketDial,chatter_tab *  chatters) {
         switch (requete.reqNum) {
             case LOG:
                 strcpy(chatters[chatters->nbChatters].chatters->nom, requete.reqBuff);
-                printf("Joueur connecte : %s\n",chatters[0].chatters->nom);
+                printf("Joueur connecte : %s\n",chatters[chatters->nbChatters].chatters->nom);
                 chatters->nbChatters++;
-                printf("Nb joueurs : %d\n",chatters->nbChatters++);
+                printf("Nb joueurs : %d\n",chatters->nbChatters);
 
 
 
