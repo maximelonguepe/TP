@@ -28,6 +28,15 @@ chatter_tab *recupererTabChatters(key_t cle2) {
     return chatterTab;
 }
 
+char * chaineSansLog(char * chaine){
+    int i;
+    for (i = 5; i <strlen(chaine) ; ++i) {
+        chaine[i-5]=chaine[i];
+    }
+    chaine[i-5]='\0';
+
+    return chaine;
+}
 
 // Traitement en fonction du type de requête reçue + fonctions venant de StreamCltSrv
 void dialSrv2Clt(int socketDial,chatter_tab *  chatters) {
@@ -48,10 +57,14 @@ void dialSrv2Clt(int socketDial,chatter_tab *  chatters) {
         printf("Message recu : %s\n", requete.reqBuff);
         switch (requete.reqNum) {
             case LOG:
-                strcpy(chatters[chatters->nbChatters].chatters->nom, requete.reqBuff);
-                printf("Joueur connecte : %s\n",chatters[chatters->nbChatters].chatters->nom);
+                strcpy(chatters->chatters[chatters->nbChatters].nom, chaineSansLog(requete.reqBuff));
+                printf("Joueur connecte : %s\n",chatters->chatters[chatters->nbChatters].nom);
                 chatters->nbChatters++;
                 printf("Nb joueurs : %d\n",chatters->nbChatters);
+
+                for (int i = 0; i <chatters->nbChatters ; ++i) {
+                     printf("---%s\n",chatters->chatters[i].nom);
+                 }
                 break;
 
         }
