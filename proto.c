@@ -40,7 +40,8 @@ char * chaineSansLog(char * chaine){
 
 // Traitement en fonction du type de requête reçue + fonctions venant de StreamCltSrv
 void dialSrv2Clt(int socketDial,chatter_tab *  chatters) {
-
+    char listeJoueur[500];
+    strcpy(listeJoueur,"");
     char buff[MAX_BUFF];
     requete_t requete;
     do {
@@ -61,15 +62,22 @@ void dialSrv2Clt(int socketDial,chatter_tab *  chatters) {
                 printf("Joueur connecte : %s\n",chatters->chatters[chatters->nbChatters].nom);
                 chatters->nbChatters++;
                 printf("Nb joueurs : %d\n",chatters->nbChatters);
-
-                for (int i = 0; i <chatters->nbChatters ; ++i) {
-                     printf("---%s\n",chatters->chatters[i].nom);
-                 }
+                envoyerMessage(socketDial, OK);
                 break;
+            case LIST:
+                strcpy(listeJoueur,"");
+                for (int i = 0; i <chatters->nbChatters ; ++i) {
+                    printf("---%s\n",chatters->chatters[i].nom);
+                    strcat(listeJoueur,"-");
+                    strcat(listeJoueur,chatters->chatters[i].nom);
+                    strcat(listeJoueur,"\n");
+                }
+                envoyerMessage(socketDial, listeJoueur);
 
+                break;
         }
         if (strcmp(requete.reqBuff, "/bye") == 0) envoyerMessage(socketDial, BYE);
-        else envoyerMessage(socketDial, OK);
+        //else envoyerMessage(socketDial, listeJoueur);
     } while (strcmp(requete.reqBuff, "/bye") != 0);
 }
 
@@ -79,7 +87,7 @@ void dialClt2srv(int socketAppel) {
     printf("Veuillez vous log : pour cela entrez /log suivi de votre nom d'utilisateur :\n");
     custom_read(buff, MAX_BUFF);
     envoyerRequete(socketAppel, buff);
-
+    recevoirMessage(socketAppel, buff, MAX_BUFF);
     do {
         memset(buff, 0, MAX_BUFF);
         printf("tapez votre message : \n"); //fflush(stdout);

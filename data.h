@@ -1,6 +1,7 @@
 #ifndef DATA_H
 #define DATA_H
 #define LOG 666
+#define LIST 2
 
 // Correspond à la couche 6 du modèle OSI (couche Présentation)
 
